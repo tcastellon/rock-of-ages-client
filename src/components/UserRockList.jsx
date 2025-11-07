@@ -8,7 +8,23 @@ export const UserRockList = ({ userRocks, fetchUserRocks }) => {
     const displayUserRocks = () => {
         if(userRocks && userRocks.length) {
             return userRocks.map(userRock => <div key={`key-${userRock.id}`} className="border p-5 border-solid hover:bg-fuchsia-500 hover:text-violet-50 rounded-md border-violet-900 mt-5 bg-slate-50">
-                {userRock.name} ({userRock.type.label}) weighs {userRock.weight} kg <br /> In the collection of {userRock.user.first_name} {userRock.user.last_name}
+                <div>{userRock.name} ({userRock.type.label}) weighs {userRock.weight} kg </div> <div>In the collection of {userRock.user.first_name} {userRock.user.last_name}</div>
+                <div>
+                    <button 
+                    onClick={async ()=> {
+                        const response = await fetch(`http://localhost:8000/rocks/${userRock.id}`, {
+                            method: "DELETE",
+                            headers: {
+                                "Authorization": `Token ${JSON.parse(localStorage.getItem("rock_token")).token}`,
+                            }
+                        })
+
+                        if (response.status === 204) {
+                            fetchUserRocks()
+                        }
+                    }}
+                    className="w-24 border p-.5 border-solid rounded-md bg-red-600 hover:not-focus:bg-indigo-700">Delete</button>
+                </div>
             </div>)
         }
         return <h3>Loading Rocks...</h3>
