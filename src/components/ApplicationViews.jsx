@@ -5,11 +5,13 @@ import { Login } from "../pages/Login.jsx"
 import Home from "../pages/Home"
 import { RockForm } from "./RockForm.jsx"
 import { RockList } from "./RockList.jsx"
+import { UserRockList } from './UserRockList.jsx'
 import { Register } from '../pages/Register.jsx'
 
 
 export const ApplicationViews = () => {
     const [rocksState, setRocksState] = useState([])
+    const [userRocksState, setUserRocksState] = useState([])
 
     const fetchRocksFromAPI = async () => {
         const response = await fetch("http://localhost:8000/rocks",
@@ -22,6 +24,17 @@ export const ApplicationViews = () => {
         setRocksState(rocks)
     }
 
+    const fetchUserRocksFromAPI = async () => {
+        const response = await fetch("http://localhost:8000/rocks?owner=current",
+            {
+                headers: {
+                    Authorization: `Token ${JSON.parse(localStorage.getItem("rock_token")).token}`
+                }
+            })
+        const rocks = await response.json()
+        setUserRocksState(rocks)
+    }
+
     return <BrowserRouter>
         <Routes>
             <Route path="/login" element={<Login />} />
@@ -30,7 +43,7 @@ export const ApplicationViews = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/allrocks" element={<RockList rocks={rocksState} fetchRocks={fetchRocksFromAPI} />} />
                 <Route path="/create" element={<RockForm fetchRocks={fetchRocksFromAPI} />} />
-                <Route path="/mine" element={<RockList rocks={rocksState} fetchRocks={fetchRocksFromAPI} />} />
+                <Route path="/mine" element={<UserRockList userRocks={userRocksState} fetchUserRocks={fetchUserRocksFromAPI} />} />
             </Route>
         </Routes>
     </BrowserRouter>
